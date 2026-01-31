@@ -18,6 +18,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import Scholarships from "./pages/dashboard/Scholarships";
 import Fees from "./pages/dashboard/Fees";
 import Notices from "./pages/dashboard/Notices";
+import VoiceAssistant from "./pages/dashboard/VoiceAssistant";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/dashboard/scholarships" element={<Scholarships />} />
             <Route path="/dashboard/fees" element={<Fees />} />
             <Route path="/dashboard/notices" element={<Notices />} />
+            <Route path="/dashboard/voice" element={<VoiceAssistant />} />
             
             <Route path="*" element={<NotFound />} />
           </Routes>
