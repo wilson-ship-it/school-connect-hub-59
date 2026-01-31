@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserRole } from '@/hooks/useUserRole';
 import { supabase } from '@/integrations/supabase/client';
-import { Award, CreditCard, Bell, ArrowRight, Calendar, Loader2 } from 'lucide-react';
+import { Award, CreditCard, Bell, ArrowRight, Calendar, Loader2, Mic } from 'lucide-react';
 
 interface Stats {
   scholarships: number;
@@ -170,6 +170,29 @@ export default function Dashboard() {
               );
             })}
           </div>
+        </div>
+
+        {/* Voice Assistant Section */}
+        <div>
+          <h2 className="text-xl font-semibold mb-4">AI Voice Assistant</h2>
+          <Link to="/dashboard/voice">
+            <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20 hover:shadow-lg hover:scale-[1.01] transition-all duration-200 cursor-pointer group">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center">
+                    <Mic className="h-8 w-8 text-primary" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold mb-1">Talk to your AI Assistant</h3>
+                    <p className="text-muted-foreground">
+                      Ask about scholarships, fees, notices, and more using your voice
+                    </p>
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
         </div>
 
         {/* Recent Notices */}
