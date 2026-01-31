@@ -13,70 +13,57 @@ serve(async (req) => {
 
   try {
     const { message, context } = await req.json();
-    const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+    const GEMINI_API_KEY = Deno.env.get('GEMINI_API_KEY');
 
-    if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY is not configured');
+    if (!GEMINI_API_KEY) {
+      throw new Error('GEMINI_API_KEY is not configured');
     }
 
     const systemPrompt = `You are a helpful voice assistant for SchoolConnect, a school community platform. You help students and administrators with:
-- Information about scholarships, fees, and notices
-- General school-related questions
-- Guidance on using the platform
+- Information about scholarships (deadlines, amounts, eligibility)
+- Fee details and due dates
+- School notices and announcements
+- General school-related queries
 
-Keep your responses concise and conversational since they will be spoken aloud. Be friendly and helpful.
+Keep responses concise and conversational since they will be spoken aloud. Be friendly and helpful.
 
 Current context:
 ${context || 'No specific context provided.'}`;
 
-    console.log('Calling Lovable AI Gateway...');
+    console.log('Calling Gemini API...');
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-3-flash-preview',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: message },
-        ],
-        max_tokens: 500,
-        temperature: 0.7,
-      }),
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: 'user',
+              parts: [{ text: systemPrompt + '\n\nUser: ' + message }],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 500,
+          },
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Lovable AI Gateway error:', response.status, errorText);
-      
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'Rate limit exceeded',
-            response: "I'm receiving too many requests right now. Please try again in a moment."
-          }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'Payment required',
-            response: "The AI service needs additional credits. Please contact your administrator."
-          }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
-      
-      throw new Error(`AI Gateway error: ${response.status}`);
+      console.error('Gemini API error:', response.status, errorText);
+      throw new Error(`Gemini API error: ${response.status}`);
     }
 
     const data = await response.json();
-    const assistantResponse = data.choices?.[0]?.message?.content || 
+    const assistantResponse = data.candidates?.[0]?.content?.parts?.[0]?.text || 
       "I'm sorry, I couldn't generate a response. Please try again.";
 
     console.log('AI response received successfully');
