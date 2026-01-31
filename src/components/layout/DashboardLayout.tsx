@@ -14,6 +14,7 @@ import {
   Menu,
   X,
   Settings,
+  Mic,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -38,6 +39,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     { href: '/dashboard/scholarships', label: 'Scholarships', icon: Award },
     { href: '/dashboard/fees', label: 'Fees', icon: CreditCard },
     { href: '/dashboard/notices', label: 'Notices', icon: Bell },
+    { href: '/dashboard/voice', label: 'Voice Assistant', icon: Mic },
   ];
 
   const adminNavItems = [
